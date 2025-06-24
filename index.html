@@ -11,7 +11,7 @@
   <div id="app">
     <h1>4th and Inches</h1>
     <h2>#Believe</h2>
-    
+
     <div id="team-input-container">
       <label for="teamName">Enter your team name:</label>
       <input type="text" id="teamName" required />
@@ -29,5 +29,16 @@
   </div>
 
   <script src="main.js"></script>
+  <script>
+    // Register service worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js')
+          .then(reg => console.log('Service Worker registered:', reg.scope))
+          .catch(err => console.error('Service Worker registration failed:', err));
+      });
+    }
+  </script>
 </body>
 </html>
+
