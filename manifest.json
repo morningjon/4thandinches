@@ -1,20 +1,22 @@
 {
-  "name": "Draft Kicker",
-  "short_name": "Kicker",
-  "icons": [
-    {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ],
-  "start_url": ".",
-  "display": "standalone",
-  "theme_color": "#0a0a0a",
-  "background_color": "#0a0a0a"
+    "name": "Draft Kicker: 4th and Inches",
+    "short_name": "Draft Kicker",
+    "description": "Mobile football kicking game with wind physics",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#1a472a",
+    "theme_color": "#1a472a",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
 }
