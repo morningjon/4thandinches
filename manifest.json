@@ -1,11 +1,6 @@
 {
-  "name": "Draft Kicker: 4th and Inches",
-  "short_name": "Draft Kicker",
-  "start_url": "index.html",
-  "display": "standalone",
-  "background_color": "#00301a",
-  "theme_color": "#004225",
-  "description": "Swipe-to-kick field goal madness for fantasy draft supremacy.",
+  "name": "Draft Kicker",
+  "short_name": "Kicker",
   "icons": [
     {
       "src": "icon-192.png",
@@ -17,5 +12,9 @@
       "sizes": "512x512",
       "type": "image/png"
     }
-  ]
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#0a0a0a",
+  "background_color": "#0a0a0a"
 }
