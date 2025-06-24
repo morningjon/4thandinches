@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Draft Kicker: 4th and Inches</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+    <h1>4th and Inches</h1>
+    <h2>#Believe</h2>
+    
+    <div id="team-input-container">
+      <label for="teamName">Enter your team name:</label>
+      <input type="text" id="teamName" required />
+      <button id="startGame">Play</button>
+    </div>
+
+    <canvas id="gameCanvas" width="400" height="600"></canvas>
+
+    <div id="wind">🌬️ Wind: <span id="windDirection">--</span></div>
+
+    <h3>Top of the Draft Board</h3>
+    <ol id="leaderboard">
+      <!-- Leaderboard entries go here -->
+    </ol>
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>
