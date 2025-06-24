@@ -28,7 +28,13 @@
     </ol>
   </div>
 
-  <script src="main.js"></script>
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+    const script = document.createElement('script');
+    script.src = 'main.js';
+    document.body.appendChild(script);
+  });
+</script>
   <script>
     // Register service worker
     if ('serviceWorker' in navigator) {
