@@ -2,49 +2,32 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Draft Kicker: 4th and Inches</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="style.css" />
+  <title>Draft Kicker: 4th and Inches</title>
 </head>
 <body>
-  <div id="app">
-    <h1>4th and Inches</h1>
-    <h2>#Believe</h2>
+  <h1>4th and Inches <span>#Believe</span></h1>
 
-    <div id="team-input-container">
-      <label for="teamName">Enter your team name:</label>
-      <input type="text" id="teamName" required />
-      <button id="startGame">Play</button>
-    </div>
-
-    <canvas id="gameCanvas" width="400" height="600"></canvas>
-
-    <div id="wind">🌬️ Wind: <span id="windDirection">--</span></div>
-
-    <h3>Top of the Draft Board</h3>
-    <ol id="leaderboard">
-      <!-- Leaderboard entries go here -->
-    </ol>
+  <div id="team-input-container">
+    <input type="text" id="teamName" placeholder="Enter your team" />
+    <button id="startGame">Play</button>
   </div>
 
-<script>
-  window.addEventListener('DOMContentLoaded', () => {
-    const script = document.createElement('script');
-    script.src = 'main.js';
-    document.body.appendChild(script);
-  });
-</script>
+  <div id="game-wrapper">
+    <p>🌬️ Wind: <span id="windDirection">--</span></p>
+    <canvas id="gameCanvas" width="360" height="600"></canvas>
+    <h2>Top of the Draft Board</h2>
+    <ol id="leaderboard"></ol>
+  </div>
+
   <script>
-    // Register service worker
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('service-worker.js')
-          .then(reg => console.log('Service Worker registered:', reg.scope))
-          .catch(err => console.error('Service Worker registration failed:', err));
-      });
-    }
+    window.addEventListener('DOMContentLoaded', () => {
+      const script = document.createElement('script');
+      script.src = 'main.js';
+      document.body.appendChild(script);
+    });
   </script>
 </body>
 </html>
-
