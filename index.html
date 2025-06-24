@@ -1,38 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Draft Kicker: 4th and Inches</title>
-  <link rel="manifest" href="manifest.json" />
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Draft Kicker: 4th and Inches</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1a472a">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>4th and Inches <span>#Believe</span></h1>
+    <div class="container">
+        <header class="header">
+            <h1>DRAFT KICKER</h1>
+            <h2>4th and Inches</h2>
+        </header>
 
-  <div id="team-input-container">
-    <input type="text" id="teamName" placeholder="Enter your team" />
-    <button id="startGame">Play</button>
-  </div>
+        <div class="game-info">
+            <div class="wind-display" id="windDisplay">
+                <span class="wind-label">WIND:</span>
+                <span class="wind-value" id="windValue">⬅️ 0</span>
+            </div>
+            <div class="score-display" id="scoreDisplay">
+                <span class="score-label">SCORE:</span>
+                <span class="score-value" id="scoreValue">0</span>
+            </div>
+        </div>
 
-  <div id="game-wrapper">
-    <p>🌬️ Wind: <span id="windDirection">--</span></p>
-    <canvas id="gameCanvas" width="360" height="600"></canvas>
-    <h2>Top of the Draft Board</h2>
-    <ol id="leaderboard"></ol>
-  </div>
+        <div class="team-input" id="teamInput">
+            <input type="text" id="teamName" placeholder="Enter your team name" maxlength="20">
+            <button id="startGame">START GAME</button>
+        </div>
 
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('service-worker.js');
-      });
-    }
-    window.addEventListener('DOMContentLoaded', () => {
-      const script = document.createElement('script');
-      script.src = 'main.js';
-      document.body.appendChild(script);
-    });
-  </script>
+        <div class="game-area" id="gameArea" style="display: none;">
+            <canvas id="gameCanvas" width="400" height="600"></canvas>
+            <div class="instructions">
+                <p>Swipe UP to kick! Harder swipe = more power</p>
+                <p>Account for wind direction and strength</p>
+            </div>
+        </div>
+
+        <div class="leaderboard">
+            <h3>🏆 LEADERBOARD</h3>
+            <ol id="leaderboardList">
+                <li>No scores yet - be the first!</li>
+            </ol>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
 </body>
 </html>
