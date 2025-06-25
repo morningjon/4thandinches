@@ -1,10 +1,11 @@
-{
+/* Draft Kicker: 4th and Inches - Styles */
+
+/* Reset and Base Styles */
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
-
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
 
 body {
     font-family: 'Orbitron', monospace;
@@ -14,6 +15,7 @@ body {
     overflow-x: hidden;
 }
 
+/* Layout */
 .container {
     max-width: 500px;
     margin: 0 auto;
@@ -21,6 +23,7 @@ body {
     min-height: 100vh;
 }
 
+/* Header */
 .header {
     text-align: center;
     margin-bottom: 30px;
@@ -42,6 +45,7 @@ body {
     letter-spacing: 1px;
 }
 
+/* Game Info Panel */
 .game-info {
     display: flex;
     justify-content: space-between;
@@ -52,24 +56,36 @@ body {
     border: 2px solid #ffd700;
 }
 
-.wind-display, .score-display {
+.wind-display, .timer-display, .score-display {
     display: flex;
     flex-direction: column;
     align-items: center;
+    flex: 1;
 }
 
-.wind-label, .score-label {
+.wind-label, .timer-label, .score-label {
     font-size: 0.8rem;
     color: #cccccc;
     margin-bottom: 5px;
 }
 
-.wind-value, .score-value {
+.wind-value, .timer-value, .score-value {
     font-size: 1.5rem;
     font-weight: 700;
     color: #ffd700;
 }
 
+.timer-value.warning {
+    color: #ff6b6b;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Team Input */
 .team-input {
     text-align: center;
     margin-bottom: 30px;
@@ -90,6 +106,13 @@ body {
     border-radius: 8px;
     text-align: center;
     margin-bottom: 15px;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.team-input input:focus {
+    box-shadow: 0 0 10px rgba(255,215,0,0.5);
+    transform: scale(1.02);
 }
 
 .team-input button {
@@ -112,6 +135,11 @@ body {
     box-shadow: 0 5px 15px rgba(255,215,0,0.4);
 }
 
+.team-input button:active {
+    transform: translateY(0);
+}
+
+/* Game Area */
 .game-area {
     text-align: center;
     margin-bottom: 30px;
@@ -125,8 +153,14 @@ body {
     max-width: 100%;
     height: auto;
     touch-action: none;
+    transition: all 0.3s ease;
 }
 
+#gameCanvas:hover {
+    box-shadow: 0 0 20px rgba(255,215,0,0.3);
+}
+
+/* Instructions */
 .instructions {
     margin-top: 15px;
     background: rgba(0,0,0,0.3);
@@ -140,6 +174,15 @@ body {
     margin-bottom: 5px;
 }
 
+#kickResult {
+    font-weight: 700;
+    font-size: 1rem;
+    margin-top: 10px;
+    min-height: 1.5rem;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+}
+
+/* Leaderboard */
 .leaderboard {
     background: rgba(0,0,0,0.4);
     padding: 20px;
@@ -153,6 +196,38 @@ body {
     margin-bottom: 15px;
     font-size: 1.3rem;
     letter-spacing: 1px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+}
+
+.leaderboard-toggle {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 15px;
+    gap: 10px;
+}
+
+.tab-button {
+    padding: 8px 16px;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.9rem;
+    background: rgba(255,255,255,0.1);
+    color: white;
+    border: 1px solid #ffd700;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.tab-button:hover {
+    background: rgba(255,255,255,0.2);
+    transform: translateY(-1px);
+}
+
+.tab-button.active {
+    background: #ffd700;
+    color: #1a472a;
+    font-weight: 700;
+    box-shadow: 0 2px 5px rgba(255,215,0,0.3);
 }
 
 .leaderboard ol {
@@ -168,6 +243,12 @@ body {
     border-radius: 5px;
     position: relative;
     font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.leaderboard li:hover {
+    background: rgba(255,255,255,0.15);
+    transform: translateX(5px);
 }
 
 .leaderboard li::before {
@@ -186,12 +267,59 @@ body {
     justify-content: center;
     font-weight: 700;
     font-size: 0.8rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
 .leaderboard li {
     padding-left: 50px;
 }
 
+/* Special ranking colors */
+.leaderboard li:nth-child(1)::before {
+    background: linear-gradient(45deg, #ffd700, #ffed4e);
+}
+
+.leaderboard li:nth-child(2)::before {
+    background: linear-gradient(45deg, #c0c0c0, #e8e8e8);
+}
+
+.leaderboard li:nth-child(3)::before {
+    background: linear-gradient(45deg, #cd7f32, #daa520);
+}
+
+/* Ball Trail Animation */
+.ball-trail {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: rgba(139, 69, 19, 0.6);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: fadeTrail 0.5s ease-out forwards;
+}
+
+@keyframes fadeTrail {
+    0% { 
+        opacity: 1; 
+        transform: scale(1); 
+    }
+    100% { 
+        opacity: 0; 
+        transform: scale(0.3); 
+    }
+}
+
+/* Loading animation */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading {
+    animation: spin 1s linear infinite;
+}
+
+/* Responsive Design */
 @media (max-width: 480px) {
     .container {
         padding: 15px;
@@ -201,37 +329,109 @@ body {
         font-size: 2rem;
     }
     
+    .header h2 {
+        font-size: 1rem;
+    }
+    
     .game-info {
+        padding: 10px;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .wind-display, .timer-display, .score-display {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+    
+    .wind-value, .timer-value, .score-value {
+        font-size: 1.2rem;
+    }
+    
+    .team-input {
+        padding: 20px 15px;
+    }
+    
+    .team-input input {
+        font-size: 1rem;
+        padding: 12px;
+    }
+    
+    .team-input button {
+        font-size: 1rem;
+        padding: 12px 25px;
+    }
+    
+    .leaderboard {
+        padding: 15px;
+    }
+    
+    .leaderboard h3 {
+        font-size: 1.1rem;
+    }
+    
+    .leaderboard li {
+        font-size: 0.8rem;
+        padding: 8px 8px 8px 45px;
+    }
+    
+    .leaderboard li::before {
+        width: 20px;
+        height: 20px;
+        font-size: 0.7rem;
+        left: 8px;
+    }
+}
+
+@media (max-width: 320px) {
+    .container {
         padding: 10px;
     }
     
-    .wind-value, .score-value {
-        font-size: 1.2rem;
+    .header h1 {
+        font-size: 1.8rem;
+    }
+    
+    .game-info {
+        padding: 8px;
+    }
+    
+    .wind-value, .timer-value, .score-value {
+        font-size: 1rem;
     }
 }
 
-.kick-effect {
-    position: absolute;
-    border-radius: 50%;
-    pointer-events: none;
-    animation: kickEffect 1s ease-out forwards;
-}
-
-.success-effect {
-    background: radial-gradient(circle, rgba(255,215,0,0.8) 0%, rgba(255,215,0,0) 70%);
-}
-
-.fail-effect {
-    background: radial-gradient(circle, rgba(255,0,0,0.8) 0%, rgba(255,0,0,0) 70%);
-}
-
-@keyframes kickEffect {
-    0% {
-        transform: scale(0);
-        opacity: 1;
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .game-info {
+        border-width: 3px;
     }
-    100% {
-        transform: scale(3);
-        opacity: 0;
+    
+    .leaderboard {
+        border-width: 3px;
+    }
+    
+    #gameCanvas {
+        border-width: 4px;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    .pulse {
+        animation: none;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    body {
+        background: linear-gradient(135deg, #0d2818 0%, #1a472a 50%, #0d2818 100%);
     }
 }
