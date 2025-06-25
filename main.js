@@ -1,85 +1,171 @@
-class DraftKicker {
-  constructor() {
-    this.canvas = document.getElementById('gameCanvas');
-    this.ctx = this.canvas.getContext('2d');
-    this.teamName = '';
-    this.score = 0;
-    this.wind = 0;
-    this.isKicking = false;
-    this.startY = 0;
-    this.localLeaderboard = this.loadLocalLeaderboard();
-    this.globalLeaderboard = [];
-    this.showingGlobal = false;
-    this.animationId = null;
+// Select DOM elements
+const teamNameInput = document.getElementById('teamNameInput');
+const startButton = document.getElementById('startButton');
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const kickResult = document.getElementById('kickResult');
+const timerDisplay = document.getElementById('timer');
+const scoreDisplay = document.getElementById('score');
+const leaderboardList = document.getElementById('leaderboardList');
+const currentTab = document.getElementById('currentTab');
+const allTimeTab = document.getElementById('allTimeTab');
 
-    this.gameTime = 60;
-    this.gameTimer = null;
-    this.gameActive = false;
+let teamName = '';
+let score = 0;
+let timeLeft = 60;
+let wind = 0;
+let timer;
+let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
+let currentGameScores = [];
 
-    this.ball = { x: 200, y: 550, vx: 0, vy: 0, gravity: 0.5, windEffect: 0, trail: [] };
+// Initialize canvas
+canvas.width = 400;
+canvas.height = 300;
 
-    this.goalpost = { leftX: 175, rightX: 225, topY: 50, bottomY: 130 };
-
-    this.initializeGame();
-    this.loadGlobalLeaderboard();
-    this.updateLeaderboardDisplay();
+// Start Game
+startButton.addEventListener('click', () => {
+  const input = teamNameInput.value.trim();
+  if (input) {
+    teamName = input;
+    score = 0;
+    timeLeft = 60;
+    updateScore();
+    updateTimer();
+    startTimer();
+    generateWind();
+    drawField();
+    kickResult.textContent = '';
+    currentGameScores = [];
   }
+});
 
-  initializeGame() {
-    document.getElementById('startGame').addEventListener('click', () => {
-      const nameInput = document.getElementById('teamName');
-      if (!nameInput.value.trim()) return;
-      this.teamName = nameInput.value.trim();
-      document.getElementById('teamInput').style.display = 'none';
-      document.getElementById('gameArea').style.display = 'block';
-      this.setupCanvas();
-      this.startGameTimer();
-      this.generateWind();
-      this.drawField();
-    });
-
-    document.getElementById('localTab').addEventListener('click', () => {
-      this.showingGlobal = false;
-      this.updateTabButtons();
-      this.updateLeaderboardDisplay();
-    });
-
-    document.getElementById('globalTab').addEventListener('click', () => {
-      this.showingGlobal = true;
-      this.updateTabButtons();
-      this.updateLeaderboardDisplay();
-    });
-
-    // Touch & Mouse handlers
-    const startKick = e => {
-      if (this.isKicking) return;
-      const rect = this.canvas.getBoundingClientRect();
-      this.startY = e.touches ? e.touches[0].clientY - rect.top : e.clientY - rect.top;
-    };
-    const endKick = e => {
-      if (this.isKicking) return;
-      const rect = this.canvas.getBoundingClientRect();
-      const endY = e.changedTouches ? e.changedTouches[0].clientY - rect.top : e.clientY - rect.top;
-      this.handleKick(this.startY - endY);
-    };
-
-    this.canvas.addEventListener('touchstart', startKick);
-    this.canvas.addEventListener('mousedown', startKick);
-    this.canvas.addEventListener('touchend', endKick);
-    this.canvas.addEventListener('mouseup', endKick);
-  }
-
-  // ... rest of your methods, but fix template literals, color syntax ...
-  // For example:
-
-  generateWind() {
-    this.wind = Math.floor(Math.random() * 11) - 5;
-    const windDisplay = document.getElementById('windValue');
-    const direction = this.wind < 0 ? '⬅️' : this.wind > 0 ? '➡️' : '🎯';
-    windDisplay.textContent = `${direction} ${Math.abs(this.wind)}`;
-  }
-
-  // etc...
+// Timer
+function startTimer() {
+  clearInterval(timer);
+  timer = setInterval(() => {
+    timeLeft--;
+    updateTimer();
+    if (timeLeft <= 0) {
+      clearInterval(timer);
+      endGame();
+    }
+  }, 1000);
 }
 
-window.addEventListener('DOMContentLoaded', () => new DraftKicker());
+function updateTimer() {
+  timerDisplay.textContent = timeLeft + 's';
+}
+
+// Score
+function updateScore() {
+  scoreDisplay.textContent = score;
+}
+
+// Wind
+function generateWind() {
+  wind = Math.floor(Math.random() * 21) - 10; // -10 to +10
+  document.getElementById('windValue').textContent = wind + ' mph';
+}
+
+// Handle Kick (Power bar mechanic)
+let power = 0;
+let powerInterval;
+
+canvas.addEventListener('mousedown', () => {
+  if (timeLeft > 0) {
+    power = 0;
+    powerInterval = setInterval(() => {
+      power = (power + 1) % 101; // Power 0-100
+      drawField(power);
+    }, 20);
+  }
+});
+
+canvas.addEventListener('mouseup', () => {
+  if (powerInterval) {
+    clearInterval(powerInterval);
+    handleKick(power);
+    power = 0;
+  }
+});
+
+// Kick logic
+function handleKick(powerLevel) {
+  const windEffect = wind * (Math.random() * 0.3);
+  const distance = powerLevel + windEffect;
+
+  if (distance >= 50) {
+    score++;
+    kickResult.textContent = `✅ GOOD! Distance: ${Math.floor(distance)} yards`;
+  } else {
+    kickResult.textContent = `❌ Missed. Distance: ${Math.floor(distance)} yards`;
+  }
+
+  updateScore();
+  generateWind();
+  drawField();
+}
+
+// End Game
+function endGame() {
+  kickResult.textContent = `⏱️ Time's up! Final Score: ${score}`;
+
+  // Save to leaderboard
+  const playerEntry = { name: teamName, score: score, date: new Date().toISOString() };
+  leaderboard.push(playerEntry);
+  localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+
+  // Track this game's scores
+  currentGameScores.push(playerEntry);
+
+  renderLeaderboard();
+}
+
+// Leaderboard rendering
+function renderLeaderboard() {
+  leaderboardList.innerHTML = '';
+  let list = [];
+
+  if (currentTab.classList.contains('active')) {
+    list = [...currentGameScores];
+  } else {
+    list = [...leaderboard];
+  }
+
+  list.sort((a, b) => b.score - a.score);
+
+  list.slice(0, 10).forEach((entry, index) => {
+    const li = document.createElement('li');
+    li.textContent = `${entry.name} - ${entry.score} pts`;
+    leaderboardList.appendChild(li);
+  });
+}
+
+// Tab switching
+currentTab.addEventListener('click', () => {
+  currentTab.classList.add('active');
+  allTimeTab.classList.remove('active');
+  renderLeaderboard();
+});
+
+allTimeTab.addEventListener('click', () => {
+  allTimeTab.classList.add('active');
+  currentTab.classList.remove('active');
+  renderLeaderboard();
+});
+
+// Initial leaderboard view
+renderLeaderboard();
+
+// Draw Field + Power Bar
+function drawField(powerLevel = 0) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Background
+  ctx.fillStyle = '#4CAF50';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Goalposts
+  ctx.fillStyle = '#FFD700';
+  ctx.fillRect(canvas.width / 2 - 5, 20, 10, 40);
+  ctx.fillRect(canva
