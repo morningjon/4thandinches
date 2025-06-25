@@ -99,7 +99,7 @@ class DraftKicker {
 
     startGameTimer() {
         this.gameActive = true;
-        this.gameTime = 60;
+        this.gameTime = 120;
         this.updateTimerDisplay();
 
         this.gameTimer = setInterval(() => {
