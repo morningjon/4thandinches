@@ -29,8 +29,8 @@ class DraftKicker {
         };
 
         this.goalpost = {
-            leftX: 175,
-            rightX: 225,
+            leftX: 150,
+            rightX: 250,
             topY: 50,
             bottomY: 130
         };
@@ -137,7 +137,7 @@ class DraftKicker {
     }
 
     generateWind() {
-        this.wind = Math.floor(Math.random() * 11) - 5;
+        this.wind = Math.floor(Math.random() * 7) - 3;
         const windDisplay = document.getElementById('windValue');
         const direction = this.wind < 0 ? '⬅️' : this.wind > 0 ? '➡️' : '🎯';
         windDisplay.textContent = `${direction} ${Math.abs(this.wind)}`;
