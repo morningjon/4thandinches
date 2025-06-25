@@ -1,22 +1,26 @@
-const CACHE_NAME = 'draft-kicker-v1';
-const ASSETS = [
-  '/',
-  '/index.html',
-  '/style.css',
-  '/main.js',
-  '/manifest.json',
-    '/cheer.mp3',
-    '/boo.mp3'
+const cacheName = 'draft-kicker-v1';
+const filesToCache = [
+    './',
+    './index.html',
+    './style.css',
+    './main.js',
+    './manifest.json',
+    './assets/cheer.mp3',
+    './assets/boo.mp3'
 ];
 
-self.addEventListener('install', evt => {
-  evt.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS)));
+self.addEventListener('install', event => {
+    event.waitUntil(
+        caches.open(cacheName).then(cache => {
+            return cache.addAll(filesToCache);
+        })
+    );
 });
 
-self.addEventListener('fetch', evt => {
-  evt.respondWith(
-    caches.match(evt.request).then(res => res || fetch(evt.request))
-  );
+self.addEventListener('fetch', event => {
+    event.respondWith(
+        caches.match(event.request).then(response => {
+            return response || fetch(event.request);
+        })
+    );
 });
-
-
