@@ -3,7 +3,7 @@ class DraftKicker {
     constructor() {
         this.canvas = document.getElementById('gameCanvas');
         this.ctx = this.canvas.getContext('2d');
-        this.teamName = '';
+        this.teamName = this.loadTeamName() || ''; // Load team name from local storage
         this.score = 0;
         this.wind = 0;
         this.isKicking = false;
@@ -16,7 +16,7 @@ class DraftKicker {
         this.gameTime = 120;
         this.gameTimer = null;
         this.gameActive = false;
-        this.gameOver = false;
+        this.gameOver = false; // This property is not used in the provided logic, consider removing if not needed.
 
         this.ball = {
             x: 200,
@@ -38,6 +38,17 @@ class DraftKicker {
         this.initializeGame();
         this.loadGlobalLeaderboard();
         this.updateLeaderboardDisplay();
+
+        // Set the team name input value if already stored, and start the game if a name exists
+        document.getElementById('teamName').value = this.teamName;
+        if (this.teamName) {
+            document.getElementById('teamInput').style.display = 'none';
+            document.getElementById('gameArea').style.display = 'block';
+            this.setupCanvas();
+            this.startGameTimer();
+            this.generateWind();
+            this.drawField();
+        }
     }
 
     initializeGame() {
@@ -45,6 +56,7 @@ class DraftKicker {
             const nameInput = document.getElementById('teamName');
             if (nameInput.value.trim()) {
                 this.teamName = nameInput.value.trim();
+                this.saveTeamName(this.teamName); // Save team name to local storage
                 document.getElementById('teamInput').style.display = 'none';
                 document.getElementById('gameArea').style.display = 'block';
                 this.setupCanvas();
@@ -64,6 +76,11 @@ class DraftKicker {
             this.showingGlobal = true;
             this.updateTabButtons();
             this.updateLeaderboardDisplay();
+        });
+
+        // Add event listener for the new "Next Game" button
+        document.getElementById('nextGame').addEventListener('click', () => {
+            this.resetGame(); // Call resetGame when button is clicked
         });
 
         this.canvas.addEventListener('touchstart', (e) => {
@@ -99,8 +116,9 @@ class DraftKicker {
 
     startGameTimer() {
         this.gameActive = true;
-        this.gameTime = 120;
+        this.gameTime = 120; // Reset game time for a new game
         this.updateTimerDisplay();
+        document.getElementById('nextGame').style.display = 'none'; // Hide Next Game button at start of new game
 
         this.gameTimer = setInterval(() => {
             this.gameTime--;
@@ -129,6 +147,28 @@ class DraftKicker {
         const resultEl = document.getElementById('kickResult');
         resultEl.innerHTML = `🎯 GAME OVER!<br>Final Score: ${this.score}`;
         resultEl.style.color = '#ffd700';
+        document.getElementById('nextGame').style.display = 'block'; // Show Next Game button when game ends
+    }
+
+    // New method to reset game state for a new round
+    resetGame() {
+        this.score = 0; // Reset score
+        document.getElementById('scoreValue').textContent = this.score; // Update score display
+        document.getElementById('kickResult').textContent = ''; // Clear kick result message
+        document.getElementById('timerValue').classList.remove('warning'); // Remove warning class from timer
+        this.ball = { // Reset ball position and velocity
+            x: 200,
+            y: 550,
+            vx: 0,
+            vy: 0,
+            gravity: 0.5,
+            windEffect: 0,
+            trail: []
+        };
+        this.isKicking = false; // Allow new kicks
+        this.startGameTimer(); // Start a new game timer
+        this.generateWind(); // Generate new wind for the next game
+        this.drawField(); // Redraw the field with the ball at starting position
     }
 
     setupCanvas() {
@@ -290,6 +330,7 @@ class DraftKicker {
         document.getElementById('scoreValue').textContent = this.score;
 
         setTimeout(() => {
+            if (!this.gameActive) return; // Only reset if game is still active
             this.isKicking = false;
             this.ball.x = 200;
             this.ball.y = 550;
@@ -325,6 +366,23 @@ class DraftKicker {
             audio.play().catch(() => {});
         } catch (e) {
             console.log('Audio error:', e);
+        }
+    }
+
+    // New methods for team name persistence
+    loadTeamName() {
+        try {
+            return localStorage.getItem('draftKickerTeamName');
+        } catch {
+            return null;
+        }
+    }
+
+    saveTeamName(name) {
+        try {
+            localStorage.setItem('draftKickerTeamName', name);
+        } catch (e) {
+            console.log('Save team name error:', e);
         }
     }
 
