@@ -1,3 +1,4 @@
+const GOOGLE_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbz0lj_OCd9gJ8Ih2q9pSfEJ4rozs18pGFt1xRRCOLwR1hw2Of9FSX-eLz4pCVxOzZwREA/exec"; // Replace with your URL
 class DraftKicker {
     constructor() {
         this.canvas = document.getElementById('gameCanvas');
@@ -344,20 +345,17 @@ class DraftKicker {
         }
     }
 
-    async loadGlobalLeaderboard() {
-        try {
-            this.globalLeaderboard = [
-                { team: "Thunder Hawks", score: 5 },
-                { team: "Steel Panthers", score: 4 },
-                { team: "Fire Dragons", score: 3 },
-                { team: "Ice Wolves", score: 2 },
-                { team: "Storm Eagles", score: 1 }
-            ];
-            this.updateLeaderboardDisplay();
-        } catch {
-            this.globalLeaderboard = [];
-        }
+async loadGlobalLeaderboard() {
+    try {
+        const response = await fetch(GOOGLE_SHEET_API_URL);
+        const data = await response.json();
+        this.globalLeaderboard = data;
+        this.updateLeaderboardDisplay();
+    } catch (error) {
+        console.error('Error loading global leaderboard:', error);
     }
+}
+
 
     updateLocalLeaderboard() {
         if (!this.teamName || this.score === 0) return;
@@ -377,22 +375,26 @@ class DraftKicker {
         this.updateLeaderboardDisplay();
     }
 
-    async updateGlobalLeaderboard() {
-        if (!this.teamName || this.score === 0) return;
-        const index = this.globalLeaderboard.findIndex(entry => entry.team.toLowerCase() === this.teamName.toLowerCase());
+async updateGlobalLeaderboard() {
+    if (!this.teamName || this.score === 0) return;
 
-        if (index !== -1) {
-            if (this.score > this.globalLeaderboard[index].score) {
-                this.globalLeaderboard[index].score = this.score;
-            }
-        } else {
-            this.globalLeaderboard.push({ team: this.teamName, score: this.score });
-        }
+    try {
+        const params = new URLSearchParams({
+            team: this.teamName,
+            score: this.score
+        });
 
-        this.globalLeaderboard.sort((a, b) => b.score - a.score);
-        this.globalLeaderboard = this.globalLeaderboard.slice(0, 20);
-        this.updateLeaderboardDisplay();
+        await fetch(GOOGLE_SHEET_API_URL, {
+            method: 'POST',
+            body: params
+        });
+
+        await this.loadGlobalLeaderboard();
+    } catch (error) {
+        console.error('Error updating global leaderboard:', error);
     }
+}
+
 
     updateTabButtons() {
         const localTab = document.getElementById('localTab');
