@@ -13,7 +13,7 @@ class DraftKicker {
         this.showingGlobal = false;
         this.animationId = null;
 
-        this.gameTime = 60;
+        this.gameTime = 120;
         this.gameTimer = null;
         this.gameActive = false;
         this.gameOver = false;
