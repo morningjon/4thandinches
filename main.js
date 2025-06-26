@@ -1,9 +1,11 @@
-const GOOGLE_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbz0lj_OCd9gJ8Ih2q9pSfEJ4rozs18pGFt1xRRCOLwR1hw2Of9FSX-eLz4pCVxOzZwREA/exec"; // Replace with your URL
+const GOOGLE_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbz0lj_OCd9gJ8Ih2q9pSfEJ4rozs18pGFt1xRRCOLwR1hw2Of9FSX-eLz4pCVxOzZwREA/exec";  // <-- Replace this with your deployed Google Apps Script URL
+
 class DraftKicker {
     constructor() {
         this.canvas = document.getElementById('gameCanvas');
         this.ctx = this.canvas.getContext('2d');
-        this.teamName = this.loadTeamName() || ''; // Load team name from local storage
+        // This will attempt to load the team name from local storage
+        this.teamName = this.loadTeamName() || ''; 
         this.score = 0;
         this.wind = 0;
         this.isKicking = false;
@@ -13,10 +15,9 @@ class DraftKicker {
         this.showingGlobal = false;
         this.animationId = null;
 
-        this.gameTime = 120;
+        this.gameTime = 120; // Changed to 120 seconds
         this.gameTimer = null;
         this.gameActive = false;
-        this.gameOver = false; // This property is not used in the provided logic, consider removing if not needed.
 
         this.ball = {
             x: 200,
@@ -29,8 +30,8 @@ class DraftKicker {
         };
 
         this.goalpost = {
-            leftX: 150,
-            rightX: 250,
+            leftX: 175, // Original width
+            rightX: 225, // Original width
             topY: 50,
             bottomY: 130
         };
@@ -40,12 +41,16 @@ class DraftKicker {
         this.updateLeaderboardDisplay();
 
         // Set the team name input value if already stored, and start the game if a name exists
-        document.getElementById('teamName').value = this.teamName;
+        // (This was part of the earlier requested features)
+        const nameInput = document.getElementById('teamName');
+        if (nameInput) { // Check if nameInput exists before accessing its value
+            nameInput.value = this.teamName;
+        }
         if (this.teamName) {
             document.getElementById('teamInput').style.display = 'none';
             document.getElementById('gameArea').style.display = 'block';
             this.setupCanvas();
-            this.startGameTimer();
+            this.startGameTimer(); // Use original timer start function
             this.generateWind();
             this.drawField();
         }
@@ -56,11 +61,12 @@ class DraftKicker {
             const nameInput = document.getElementById('teamName');
             if (nameInput.value.trim()) {
                 this.teamName = nameInput.value.trim();
-                this.saveTeamName(this.teamName); // Save team name to local storage
+                // Save team name to local storage (part of earlier requested features)
+                this.saveTeamName(this.teamName);
                 document.getElementById('teamInput').style.display = 'none';
                 document.getElementById('gameArea').style.display = 'block';
                 this.setupCanvas();
-                this.startGameTimer();
+                this.startGameTimer(); // Use original timer start function
                 this.generateWind();
                 this.drawField();
             }
@@ -78,9 +84,9 @@ class DraftKicker {
             this.updateLeaderboardDisplay();
         });
 
-        // Add event listener for the new "Next Game" button
+        // "Next Game" button functionality (part of earlier requested features)
         document.getElementById('nextGame').addEventListener('click', () => {
-            this.resetGame(); // Call resetGame when button is clicked
+            this.resetGame();
         });
 
         this.canvas.addEventListener('touchstart', (e) => {
@@ -114,11 +120,25 @@ class DraftKicker {
         });
     }
 
-    startGameTimer() {
+    startGameTimer() { // Reverted to original timer logic
         this.gameActive = true;
-        this.gameTime = 120; // Reset game time for a new game
+        this.gameTime = 120; // Set to 120 seconds
         this.updateTimerDisplay();
-        document.getElementById('nextGame').style.display = 'none'; // Hide Next Game button at start of new game
+        
+        // Hide Next Game button at start of new game (part of earlier requested features)
+        document.getElementById('nextGame').style.display = 'none'; 
+
+        // Ensure timer display is visible and not in warning state
+        const timerDisplay = document.getElementById('timerDisplay');
+        if (timerDisplay) {
+            timerDisplay.style.display = 'block'; // Or 'flex' depending on your CSS
+        }
+        const timerValue = document.getElementById('timerValue');
+        if (timerValue) {
+            timerValue.classList.remove('warning');
+        }
+
+        if (this.gameTimer) clearInterval(this.gameTimer); // Clear any existing timer
 
         this.gameTimer = setInterval(() => {
             this.gameTime--;
@@ -135,28 +155,32 @@ class DraftKicker {
     }
 
     updateTimerDisplay() {
-        document.getElementById('timerValue').textContent = this.gameTime;
+        const timerValueSpan = document.getElementById('timerValue');
+        if (timerValueSpan) {
+            timerValueSpan.textContent = this.gameTime;
+        }
     }
 
     endGame() {
         this.gameActive = false;
-        if (this.gameTimer) clearInterval(this.gameTimer);
+        if (this.gameTimer) clearInterval(this.gameTimer); // Clear timer when game ends
         this.updateLocalLeaderboard();
         this.updateGlobalLeaderboard();
 
         const resultEl = document.getElementById('kickResult');
-        resultEl.innerHTML = `🎯 GAME OVER!<br>Final Score: ${this.score}`;
+        resultEl.innerHTML = `🎯 GAME OVER!<br>Final Score: ${this.score}`; // Reverted to original end message
         resultEl.style.color = '#ffd700';
-        document.getElementById('nextGame').style.display = 'block'; // Show Next Game button when game ends
+        
+        // Show Next Game button when game ends (part of earlier requested features)
+        document.getElementById('nextGame').style.display = 'block'; 
     }
 
-    // New method to reset game state for a new round
-    resetGame() {
-        this.score = 0; // Reset score
-        document.getElementById('scoreValue').textContent = this.score; // Update score display
-        document.getElementById('kickResult').textContent = ''; // Clear kick result message
-        document.getElementById('timerValue').classList.remove('warning'); // Remove warning class from timer
-        this.ball = { // Reset ball position and velocity
+    resetGame() { // Reset function for Next Game button
+        this.score = 0;
+        document.getElementById('scoreValue').textContent = this.score;
+        document.getElementById('kickResult').textContent = '';
+        
+        this.ball = {
             x: 200,
             y: 550,
             vx: 0,
@@ -165,10 +189,10 @@ class DraftKicker {
             windEffect: 0,
             trail: []
         };
-        this.isKicking = false; // Allow new kicks
-        this.startGameTimer(); // Start a new game timer
-        this.generateWind(); // Generate new wind for the next game
-        this.drawField(); // Redraw the field with the ball at starting position
+        this.isKicking = false;
+        this.startGameTimer(); // Start timer again
+        this.generateWind();
+        this.drawField();
     }
 
     setupCanvas() {
@@ -177,7 +201,7 @@ class DraftKicker {
     }
 
     generateWind() {
-        this.wind = Math.floor(Math.random() * 7) - 3;
+        this.wind = Math.floor(Math.random() * 11) - 5; // Reverted to original wind range [-5, 5]
         const windDisplay = document.getElementById('windValue');
         const direction = this.wind < 0 ? '⬅️' : this.wind > 0 ? '➡️' : '🎯';
         windDisplay.textContent = `${direction} ${Math.abs(this.wind)}`;
@@ -263,7 +287,11 @@ class DraftKicker {
         const normalizedPower = Math.min(Math.max(power, 30), 250) / 250;
         this.ball.vy = -normalizedPower * 16 - 8;
         this.ball.vx = Math.random() * 2 - 1;
-        this.ball.windEffect = this.wind * 0.1;
+
+        // --- NEW: Conditional wind effect multiplier for Wind 3 ---
+        const windMultiplier = (Math.abs(this.wind) === 3) ? 0.05 : 0.1;
+        this.ball.windEffect = this.wind * windMultiplier;
+
         this.ball.trail = [];
 
         this.animateKick();
@@ -330,7 +358,7 @@ class DraftKicker {
         document.getElementById('scoreValue').textContent = this.score;
 
         setTimeout(() => {
-            if (!this.gameActive) return; // Only reset if game is still active
+            if (!this.gameActive) return; // Only reset if game is still active (timer hasn't run out)
             this.isKicking = false;
             this.ball.x = 200;
             this.ball.y = 550;
@@ -369,11 +397,12 @@ class DraftKicker {
         }
     }
 
-    // New methods for team name persistence
+    // Load/Save team name methods (from earlier requested features)
     loadTeamName() {
         try {
             return localStorage.getItem('draftKickerTeamName');
-        } catch {
+        } catch (e) {
+            console.log('Error loading team name:', e);
             return null;
         }
     }
@@ -382,7 +411,7 @@ class DraftKicker {
         try {
             localStorage.setItem('draftKickerTeamName', name);
         } catch (e) {
-            console.log('Save team name error:', e);
+            console.log('Error saving team name:', e);
         }
     }
 
@@ -403,20 +432,40 @@ class DraftKicker {
         }
     }
 
-async loadGlobalLeaderboard() {
-    try {
-        const response = await fetch(GOOGLE_SHEET_API_URL);
-        const data = await response.json();
-        this.globalLeaderboard = data;
-        this.updateLeaderboardDisplay();
-    } catch (error) {
-        console.error('Error loading global leaderboard:', error);
+    async loadGlobalLeaderboard() {
+        try {
+            const response = await fetch(GOOGLE_SHEET_API_URL);
+            const data = await response.json();
+            this.globalLeaderboard = data;
+            this.updateLeaderboardDisplay();
+        } catch (error) {
+            console.error('Error loading global leaderboard:', error);
+        }
     }
-}
 
+    async updateGlobalLeaderboard() {
+        if (!this.teamName || this.score === 0) return;
+
+        try {
+            const params = new URLSearchParams({
+                team: this.teamName,
+                score: this.score
+            });
+
+            await fetch(GOOGLE_SHEET_API_URL, {
+                method: 'POST',
+                body: params
+            });
+
+            await this.loadGlobalLeaderboard();
+        } catch (error) {
+            console.error('Error updating global leaderboard:', error);
+        }
+    }
 
     updateLocalLeaderboard() {
         if (!this.teamName || this.score === 0) return;
+
         const index = this.localLeaderboard.findIndex(entry => entry.team.toLowerCase() === this.teamName.toLowerCase());
 
         if (index !== -1) {
@@ -432,27 +481,6 @@ async loadGlobalLeaderboard() {
         this.saveLocalLeaderboard();
         this.updateLeaderboardDisplay();
     }
-
-async updateGlobalLeaderboard() {
-    if (!this.teamName || this.score === 0) return;
-
-    try {
-        const params = new URLSearchParams({
-            team: this.teamName,
-            score: this.score
-        });
-
-        await fetch(GOOGLE_SHEET_API_URL, {
-            method: 'POST',
-            body: params
-        });
-
-        await this.loadGlobalLeaderboard();
-    } catch (error) {
-        console.error('Error updating global leaderboard:', error);
-    }
-}
-
 
     updateTabButtons() {
         const localTab = document.getElementById('localTab');
@@ -482,4 +510,14 @@ async updateGlobalLeaderboard() {
 
 document.addEventListener('DOMContentLoaded', () => {
     new DraftKicker();
+    // Service worker registration block from index.html is likely preferred
+    // if ('serviceWorker' in navigator) {
+    //     window.addEventListener('load', () => {
+    //         navigator.serviceWorker.register('service-worker.js').then(registration => {
+    //             console.log('Service Worker registered with scope:', registration.scope);
+    //         }).catch(error => {
+    //             console.log('Service Worker registration failed:', error);
+    //         });
+    //     });
+    // }
 });
