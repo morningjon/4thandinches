@@ -434,7 +434,7 @@ class DraftKicker {
 
     async loadGlobalLeaderboard() {
         try {
-            const response = await fetch(GOOGLE_SHEET_API_URL);
+            const response = await fetch(https://script.google.com/macros/s/AKfycbz0lj_OCd9gJ8Ih2q9pSfEJ4rozs18pGFt1xRRCOLwR1hw2Of9FSX-eLz4pCVxOzZwREA/exec);
             const data = await response.json();
             this.globalLeaderboard = data;
             this.updateLeaderboardDisplay();
@@ -452,7 +452,7 @@ class DraftKicker {
                 score: this.score
             });
 
-            await fetch(GOOGLE_SHEET_API_URL, {
+            await fetch(https://script.google.com/macros/s/AKfycbz0lj_OCd9gJ8Ih2q9pSfEJ4rozs18pGFt1xRRCOLwR1hw2Of9FSX-eLz4pCVxOzZwREA/exec, {
                 method: 'POST',
                 body: params
             });
