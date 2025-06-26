@@ -1,4 +1,4 @@
-const GOOGLE_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbz0lj_OCd9gJ8Ih2q9pSfEJ4rozs18pGFt1xRRCOLwR1hw2Of9FSX-eLz4pCVxOzZwREA/exec";  // <-- Replace this with your deployed Google Apps Script URL
+const GOOGLE_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbz0lj_OCd9gJ8Ih2q9pSfEJ4rozs18pGFt1xRRCOLwR1hw2Of9FSX-eLz4pCVxOzZwREA/exec";  // Updated API URL
 
 class DraftKicker {
     constructor() {
@@ -15,7 +15,7 @@ class DraftKicker {
         this.showingGlobal = false;
         this.animationId = null;
 
-        this.gameTime = 120; // Changed to 120 seconds
+        this.gameTime = 120; // Timer set to 120 seconds
         this.gameTimer = null;
         this.gameActive = false;
 
@@ -41,7 +41,6 @@ class DraftKicker {
         this.updateLeaderboardDisplay();
 
         // Set the team name input value if already stored, and start the game if a name exists
-        // (This was part of the earlier requested features)
         const nameInput = document.getElementById('teamName');
         if (nameInput) { // Check if nameInput exists before accessing its value
             nameInput.value = this.teamName;
@@ -50,7 +49,7 @@ class DraftKicker {
             document.getElementById('teamInput').style.display = 'none';
             document.getElementById('gameArea').style.display = 'block';
             this.setupCanvas();
-            this.startGameTimer(); // Use original timer start function
+            this.startGameTimer();
             this.generateWind();
             this.drawField();
         }
@@ -61,12 +60,11 @@ class DraftKicker {
             const nameInput = document.getElementById('teamName');
             if (nameInput.value.trim()) {
                 this.teamName = nameInput.value.trim();
-                // Save team name to local storage (part of earlier requested features)
                 this.saveTeamName(this.teamName);
                 document.getElementById('teamInput').style.display = 'none';
                 document.getElementById('gameArea').style.display = 'block';
                 this.setupCanvas();
-                this.startGameTimer(); // Use original timer start function
+                this.startGameTimer();
                 this.generateWind();
                 this.drawField();
             }
@@ -84,7 +82,7 @@ class DraftKicker {
             this.updateLeaderboardDisplay();
         });
 
-        // "Next Game" button functionality (part of earlier requested features)
+        // "Next Game" button functionality
         document.getElementById('nextGame').addEventListener('click', () => {
             this.resetGame();
         });
@@ -120,25 +118,23 @@ class DraftKicker {
         });
     }
 
-    startGameTimer() { // Reverted to original timer logic
+    startGameTimer() {
         this.gameActive = true;
-        this.gameTime = 120; // Set to 120 seconds
+        this.gameTime = 120; // Timer set to 120 seconds
         this.updateTimerDisplay();
         
-        // Hide Next Game button at start of new game (part of earlier requested features)
         document.getElementById('nextGame').style.display = 'none'; 
 
-        // Ensure timer display is visible and not in warning state
         const timerDisplay = document.getElementById('timerDisplay');
         if (timerDisplay) {
-            timerDisplay.style.display = 'block'; // Or 'flex' depending on your CSS
+            timerDisplay.style.display = 'block';
         }
         const timerValue = document.getElementById('timerValue');
         if (timerValue) {
             timerValue.classList.remove('warning');
         }
 
-        if (this.gameTimer) clearInterval(this.gameTimer); // Clear any existing timer
+        if (this.gameTimer) clearInterval(this.gameTimer);
 
         this.gameTimer = setInterval(() => {
             this.gameTime--;
@@ -163,19 +159,18 @@ class DraftKicker {
 
     endGame() {
         this.gameActive = false;
-        if (this.gameTimer) clearInterval(this.gameTimer); // Clear timer when game ends
+        if (this.gameTimer) clearInterval(this.gameTimer);
         this.updateLocalLeaderboard();
         this.updateGlobalLeaderboard();
 
         const resultEl = document.getElementById('kickResult');
-        resultEl.innerHTML = `🎯 GAME OVER!<br>Final Score: ${this.score}`; // Reverted to original end message
+        resultEl.innerHTML = `🎯 GAME OVER!<br>Final Score: ${this.score}`;
         resultEl.style.color = '#ffd700';
         
-        // Show Next Game button when game ends (part of earlier requested features)
         document.getElementById('nextGame').style.display = 'block'; 
     }
 
-    resetGame() { // Reset function for Next Game button
+    resetGame() {
         this.score = 0;
         document.getElementById('scoreValue').textContent = this.score;
         document.getElementById('kickResult').textContent = '';
@@ -190,7 +185,7 @@ class DraftKicker {
             trail: []
         };
         this.isKicking = false;
-        this.startGameTimer(); // Start timer again
+        this.startGameTimer();
         this.generateWind();
         this.drawField();
     }
@@ -201,7 +196,8 @@ class DraftKicker {
     }
 
     generateWind() {
-        this.wind = Math.floor(Math.random() * 11) - 5; // Reverted to original wind range [-5, 5]
+        // Wind range is -3 to +3
+        this.wind = Math.floor(Math.random() * 7) - 3; 
         const windDisplay = document.getElementById('windValue');
         const direction = this.wind < 0 ? '⬅️' : this.wind > 0 ? '➡️' : '🎯';
         windDisplay.textContent = `${direction} ${Math.abs(this.wind)}`;
@@ -288,8 +284,8 @@ class DraftKicker {
         this.ball.vy = -normalizedPower * 16 - 8;
         this.ball.vx = Math.random() * 2 - 1;
 
-        // --- NEW: Conditional wind effect multiplier for Wind 3 ---
-        const windMultiplier = (Math.abs(this.wind) === 3) ? 0.05 : 0.1;
+        // Conditional wind effect multiplier: 10% reduction for Wind 3
+        const windMultiplier = (Math.abs(this.wind) === 3) ? 0.09 : 0.1; 
         this.ball.windEffect = this.wind * windMultiplier;
 
         this.ball.trail = [];
@@ -358,7 +354,7 @@ class DraftKicker {
         document.getElementById('scoreValue').textContent = this.score;
 
         setTimeout(() => {
-            if (!this.gameActive) return; // Only reset if game is still active (timer hasn't run out)
+            if (!this.gameActive) return;
             this.isKicking = false;
             this.ball.x = 200;
             this.ball.y = 550;
@@ -397,7 +393,7 @@ class DraftKicker {
         }
     }
 
-    // Load/Save team name methods (from earlier requested features)
+    // Load/Save team name methods
     loadTeamName() {
         try {
             return localStorage.getItem('draftKickerTeamName');
@@ -434,7 +430,7 @@ class DraftKicker {
 
     async loadGlobalLeaderboard() {
         try {
-            const response = await fetch(https://script.google.com/macros/s/AKfycbz0lj_OCd9gJ8Ih2q9pSfEJ4rozs18pGFt1xRRCOLwR1hw2Of9FSX-eLz4pCVxOzZwREA/exec);
+            const response = await fetch(GOOGLE_SHEET_API_URL);
             const data = await response.json();
             this.globalLeaderboard = data;
             this.updateLeaderboardDisplay();
@@ -452,7 +448,7 @@ class DraftKicker {
                 score: this.score
             });
 
-            await fetch(https://script.google.com/macros/s/AKfycbz0lj_OCd9gJ8Ih2q9pSfEJ4rozs18pGFt1xRRCOLwR1hw2Of9FSX-eLz4pCVxOzZwREA/exec, {
+            await fetch(GOOGLE_SHEET_API_URL, {
                 method: 'POST',
                 body: params
             });
