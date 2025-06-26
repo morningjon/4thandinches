@@ -29,9 +29,10 @@ class DraftKicker {
             trail: []
         };
 
+        // Goalpost dimensions: 150 to 250
         this.goalpost = {
-            leftX: 150, // Original width
-            rightX: 250, // Original width
+            leftX: 150, 
+            rightX: 250, 
             topY: 50,
             bottomY: 130
         };
@@ -230,20 +231,20 @@ class DraftKicker {
 
         ctx.strokeStyle = '#ffd700';
         ctx.lineWidth = 4;
-        ctx.beginPath();
-        ctx.moveTo(this.goalpost.leftX, this.goalpost.topY);
-        ctx.lineTo(this.goalpost.leftX, this.goalpost.bottomY);
-        ctx.stroke();
+        this.ctx.beginPath();
+        this.ctx.moveTo(this.goalpost.leftX, this.goalpost.topY);
+        this.ctx.lineTo(this.goalpost.leftX, this.goalpost.bottomY);
+        this.ctx.stroke();
 
-        ctx.beginPath();
-        ctx.moveTo(this.goalpost.rightX, this.goalpost.topY);
-        ctx.lineTo(this.goalpost.rightX, this.goalpost.bottomY);
-        ctx.stroke();
+        this.ctx.beginPath();
+        this.ctx.moveTo(this.goalpost.rightX, this.goalpost.topY);
+        this.ctx.lineTo(this.goalpost.rightX, this.goalpost.bottomY);
+        this.ctx.stroke();
 
-        ctx.beginPath();
-        ctx.moveTo(this.goalpost.leftX, this.goalpost.bottomY);
-        ctx.lineTo(this.goalpost.rightX, this.goalpost.bottomY);
-        ctx.stroke();
+        this.ctx.beginPath();
+        this.ctx.moveTo(this.goalpost.leftX, this.goalpost.bottomY);
+        this.ctx.lineTo(this.goalpost.rightX, this.goalpost.bottomY);
+        this.ctx.stroke();
 
         this.drawFootball();
     }
@@ -284,7 +285,7 @@ class DraftKicker {
         this.ball.vy = -normalizedPower * 16 - 8;
         this.ball.vx = Math.random() * 2 - 1;
 
-        // Conditional wind effect multiplier: 10% reduction for Wind 3
+        // Conditional wind effect multiplier: 20% reduction for Wind 3
         const windMultiplier = (Math.abs(this.wind) === 3) ? 0.08 : 0.1; 
         this.ball.windEffect = this.wind * windMultiplier;
 
@@ -430,7 +431,8 @@ class DraftKicker {
 
     async loadGlobalLeaderboard() {
         try {
-            const response = await fetch(https://script.google.com/macros/s/AKfycbz0lj_OCd9gJ8Ih2q9pSfEJ4rozs18pGFt1xRRCOLwR1hw2Of9FSX-eLz4pCVxOzZwREA/exec);
+            // Corrected: Using the constant GOOGLE_SHEET_API_URL
+            const response = await fetch(GOOGLE_SHEET_API_URL);
             const data = await response.json();
             this.globalLeaderboard = data;
             this.updateLeaderboardDisplay();
@@ -448,7 +450,8 @@ class DraftKicker {
                 score: this.score
             });
 
-            await fetch(https://script.google.com/macros/s/AKfycbz0lj_OCd9gJ8Ih2q9pSfEJ4rozs18pGFt1xRRCOLwR1hw2Of9FSX-eLz4pCVxOzZwREA/exec, {
+            // Corrected: Using the constant GOOGLE_SHEET_API_URL
+            await fetch(GOOGLE_SHEET_API_URL, {
                 method: 'POST',
                 body: params
             });
