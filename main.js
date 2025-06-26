@@ -30,8 +30,8 @@ class DraftKicker {
         };
 
         this.goalpost = {
-            leftX: 175, // Original width
-            rightX: 225, // Original width
+            leftX: 150, // Original width
+            rightX: 250, // Original width
             topY: 50,
             bottomY: 130
         };
